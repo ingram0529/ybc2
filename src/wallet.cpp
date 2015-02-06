@@ -1150,8 +1150,11 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, int64> >& vecSend, CW
                     //  If we reused the old key, it would be possible to add code to look for and
                     //  rediscover unknown transactions that were written with keys of ours to recover
                     //  post-backup change.
-
+#ifdef WIN32
                     if (!GetBoolArg("-avatar", true)) // peercoin: not avatar mode; peershares: avatar mode enabled by default to avoid change being sent to hidden address
+#else
+                    if (!GetBoolArg("-avatar", false)) // default use a new key if linux.
+#endif
                     {
                         // Reserve a new key pair from key pool
                         vector<unsigned char> vchPubKey = reservekey.GetReservedKey();
