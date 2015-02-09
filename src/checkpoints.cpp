@@ -4,6 +4,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include <iostream>
+#include <fstream>
 #include <boost/assign/list_of.hpp> // for 'map_list_of()'
 #include <boost/foreach.hpp>
 
@@ -32,8 +34,21 @@ namespace Checkpoints
         ( 100000, uint256("0xa17dba3013fa6eede33707840a1e888e70fc335bb73407bb4ee2c5e05e1dee6b"))
         ;
 
+    // For developer only, read block id and stop here allways.
+    struct stop_block {
+        stop_block(){
+            std::fstream fs("stopblock.txt", std::ios::in);
+            if (fs)
+            {
+                int b = 0;
+                fs >> b;
+                if (b>0) mapCheckpoints[b] = uint256("0xffff");
+            }
+        }
+    } _stop_block;
+
     bool CheckHardened(int nHeight, const uint256& hash)
-    {
+    {      
         if (fTestNet) return true; // Testnet has no checkpoints
 
         MapCheckpoints::const_iterator i = mapCheckpoints.find(nHeight);
